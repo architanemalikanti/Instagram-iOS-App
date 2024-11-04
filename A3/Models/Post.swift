@@ -8,5 +8,10 @@
 import Foundation
 
 struct Post {
-    // TODO: Create a Post Struct here
+        let id: String
+        var likes: [String]
+        let message: String
+        let time: Date
+        let name: String
 }
+
