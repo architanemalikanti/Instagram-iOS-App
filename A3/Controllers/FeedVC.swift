@@ -14,22 +14,60 @@ class FeedVC: UIViewController {
 
     // Dummy data for posts in the second section
     private let dummyPosts = [
-        Post(id: "1", likes: ["Alice", "Bob"], message: "Ithaca is Gorges.", time: Date(), name: "Alice"),
-        Post(id: "2", likes: ["Charlie"], message: "I'm from Boston!", time: Date(), name: "Charlie"),
-        Post(id: "3", likes: ["Dave", "Eve", "Frank"], message: "My classes are killing me.", time: Date(), name: "Dave"),
-        Post(id: "4", likes: ["Gina"], message: "I need sleep.", time: Date(), name: "Gina")
+        Post(id: "1", likes: ["Alice", "Bob"], message: "Ithaca is Gorges.", time: Date()),
+        Post(id: "2", likes: ["Charlie"], message: "I'm from Boston!", time: Date()),
+        Post(id: "3", likes: ["Dave", "Eve", "Frank"], message: "My classes are killing me.", time: Date()),
+        Post(id: "4", likes: ["Gina"], message: "I need sleep.", time: Date())
     ]
+    
+    //a property to hold the fetched data from the backend (all posts)
+    var Posts: [Post] = []
+    
+    //refresh control
+    private let refreshControl = UIRefreshControl()
     
 
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchPostsData()
         
         title = "ChatDev"
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.a3.offWhite
 
 
         setupCollectionView()
+        
+        //set up collection view
+        collectionView.refreshControl = refreshControl
+        
+        //add your target for refresh control:
+        refreshControl.addTarget(self, action: #selector(fetchAllPosts), for: .valueChanged)
+        
+        //initial fetch
+        fetchAllPosts()
+        
+        
+        
+    }
+    
+    // Wrapper method to fetch posts and refresh the UI
+    @objc private func fetchAllPosts() {
+        // Call the fetchPosts method from NetworkManager
+        NetworkManager.shared.fetchPosts { [weak self] fetchedPosts in
+            guard let self = self else { return }
+            
+            // Update data source
+            self.Posts = fetchedPosts
+            
+            DispatchQueue.main.async {
+                // Reload collection view with new data
+                self.collectionView.reloadData()
+                
+                // Stop the refresh control animation
+                self.refreshControl.endRefreshing()
+            }
+        }
     }
 
     // MARK: - Setup Collection View
@@ -41,7 +79,7 @@ class FeedVC: UIViewController {
 
         // Initialize collection view with layout
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor.white
+        collectionView.backgroundColor = UIColor.a3.offWhite
         collectionView.dataSource = self
         collectionView.delegate = self
 
@@ -59,6 +97,23 @@ class FeedVC: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
+    
+    
+    //handling the input fetched data
+    func fetchPostsData() {
+        NetworkManager.shared.fetchPosts { [weak self] fetchedPosts in
+            guard let self = self else { return }
+            
+            // Do something with the data such as...
+            self.Posts = fetchedPosts
+            
+            DispatchQueue.main.async {
+                // Perform UI updates such as...
+                self.collectionView.reloadData()
+            }
+        }
+    }
+
 }
 
 // MARK: - UICollectionViewDataSource
@@ -72,7 +127,7 @@ extension FeedVC: UICollectionViewDataSource {
         if section == 0 {
             return 1 // Section 0 has one "Create Post" cell
         } else {
-            return dummyPosts.count // Section 1 has posts
+            return Posts.count // Section 1 has posts
         }
     }
 
@@ -84,7 +139,7 @@ extension FeedVC: UICollectionViewDataSource {
         } else {
             // Post cell
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PostCell", for: indexPath) as! PostCollectionViewCell
-            let post = dummyPosts[indexPath.item]
+            let post = `Posts`[indexPath.item]
             cell.configure(with: post) // Assuming `configure(with:)` is a method in PostCollectionViewCell
             return cell
         }
@@ -98,9 +153,9 @@ extension FeedVC: UICollectionViewDelegateFlowLayout {
         let width = collectionView.bounds.width - 32 // 16 points padding on each side
 
         if indexPath.section == 0 {
-            return CGSize(width: width, height: 100) // "Create Post" cell size
+            return CGSize(width: width, height: 175) // "Create Post" cell size
         } else {
-            return CGSize(width: width, height: 150) // Post cell size
+            return CGSize(width: width, height: 175) // Post cell size
         }
     }
 

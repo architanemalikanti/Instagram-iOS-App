@@ -1,8 +1,8 @@
 //
-//  PostCollectionViewCell.swift
-//  A3
+//  Untitled.swift
+//  A3
 //
-//  Created by Renee Gowda on 11/4/24.
+//  Created by Archita Nemalikanti Nov 12th
 //
 
 import UIKit
@@ -12,17 +12,21 @@ class PostCollectionViewCell: UICollectionViewCell {
     // MARK: - Properties (view)
     
     private let nameLabel = UILabel()
-    private let timeLabel = UILabel()
+    private let dateLabel = UILabel()
+    private let logoImageView = UIImageView()
+    
     private let messageLabel = UILabel()
     private let likeButton = UIButton()
-    private let likeCountLabel = UILabel()
-    private let profileImageView = UIImageView()
+    private let likesLabel = UILabel()
     
-    // MARK: - Properties (data)
+    static let reuse = "PostCollectionViewCell"
     
-    static let reuse = "PostCollectionViewCellReuse"
+    private var postID: String?
+    private var netID = "apn32"
     
-    // MARK: - Initializer
+    // MARK: - Init
+    
+    private var likeCount: Int = 0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,123 +34,144 @@ class PostCollectionViewCell: UICollectionViewCell {
         backgroundColor = UIColor.a3.white
         layer.cornerRadius = 16
         
-        setupProfileImageView()
         setupNameLabel()
-        setupTimeLabel()
+        setupDateLabel()
+        setupLogoImageView()
         setupMessageLabel()
         setupLikeButton()
-        setupLikeCountLabel()
+        setupLikesLabel()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Configure
+    
+    func configure(with post: Post) {
+        messageLabel.text = post.message
+        dateLabel.text = post.time.convertToAgo()
+        likesLabel.text = "\(post.likes.count) likes"
+        
+        postID = post.id
+        if post.likes.contains(netID) {
+            likeButton.tintColor = UIColor.a3.ruby
+            likeButton.isEnabled = false
+        } else {
+            likeButton.tintColor = UIColor.a3.silver
+            likeButton.isEnabled = true
+        }
+    }
+    
     // MARK: - Set Up Views
     
-    private func setupProfileImageView() {
-        profileImageView.contentMode = .scaleAspectFit
-        profileImageView.layer.cornerRadius = 16
-        profileImageView.clipsToBounds = true
-        contentView.addSubview(profileImageView)
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            profileImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            profileImageView.widthAnchor.constraint(equalToConstant: 32),
-            profileImageView.heightAnchor.constraint(equalToConstant: 32)
-        ])
-    }
-    
     private func setupNameLabel() {
-        nameLabel.font = .boldSystemFont(ofSize: 14)
+        nameLabel.text = "Anonymous"
         nameLabel.textColor = UIColor.a3.black
+        nameLabel.font = .systemFont(ofSize: 14, weight: .semibold)
+        
         contentView.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 8),
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16)
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 64),
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24.5)
         ])
     }
     
-    private func setupTimeLabel() {
-        timeLabel.font = .systemFont(ofSize: 12)
-        timeLabel.textColor = UIColor.a3.silver
-        contentView.addSubview(timeLabel)
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+    private func setupDateLabel() {
+        dateLabel.textColor = UIColor.a3.silver
+        dateLabel.font = .systemFont(ofSize: 14)
+        
+        contentView.addSubview(dateLabel)
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
-            timeLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 8),
-            timeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4)
+            dateLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            dateLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor)
+        ])
+    }
+    
+    private func setupLogoImageView() {
+        logoImageView.image = UIImage(named: "logo")
+        
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(logoImageView)
+        
+        let sidePadding: CGFloat = 24
+        
+        NSLayoutConstraint.activate([
+            logoImageView.widthAnchor.constraint(equalToConstant: 32),
+            logoImageView.heightAnchor.constraint(equalToConstant: 32),
+            logoImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: sidePadding),
+            logoImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24)
         ])
     }
     
     private func setupMessageLabel() {
-        messageLabel.font = .systemFont(ofSize: 16)
         messageLabel.textColor = UIColor.a3.black
+        messageLabel.font = .systemFont(ofSize: 14)
+        messageLabel.numberOfLines = 0
+        
         contentView.addSubview(messageLabel)
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
-            messageLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            messageLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            messageLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8)
+            messageLabel.leadingAnchor.constraint(equalTo: logoImageView.leadingAnchor),
+            messageLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 17)
         ])
     }
     
     private func setupLikeButton() {
         likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        likeButton.tintColor = UIColor.a3.ruby
+        likeButton.tintColor = UIColor.a3.silver
+        likeButton.addTarget(self, action: #selector(likePostTapped), for: .touchUpInside)
+        
         contentView.addSubview(likeButton)
         likeButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            likeButton.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 16),
-            likeButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
-        ])
-    }
-    
-    private func setupLikeCountLabel() {
-        likeCountLabel.font = .systemFont(ofSize: 12)
-        likeCountLabel.textColor = UIColor.a3.silver
-        contentView.addSubview(likeCountLabel)
-        likeCountLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            likeCountLabel.leadingAnchor.constraint(equalTo: likeButton.trailingAnchor, constant: 8),
-            likeCountLabel.centerYAnchor.constraint(equalTo: likeButton.centerYAnchor)
-        ])
-    }
-    
-    // MARK: - Configure Method
-    
-    func configure(with post: Post) {
-            nameLabel.text = post.name
-            messageLabel.text = post.message
-            timeLabel.text = convertToAgo(date: post.time)
-            likeCountLabel.text = "\(post.likes.count) likes"
-        }
         
-    private func convertToAgo(date: Date) -> String {
-            let currentDate = Date()
-            let secondsAgo = Int(currentDate.timeIntervalSince(date))
-            
-            switch secondsAgo {
-                case 0:
-                    return "Just now"
-                case 1:
-                    return "1 second ago"
-                case 2..<60:
-                    return "\(secondsAgo) seconds ago"
-                case 60:
-                    return "1 minute ago"
-                case 61..<3600:
-                    return "\(secondsAgo / 60) minutes ago"
-                case 3600:
-                    return "1 hour ago"
-                case 3601..<86400:
-                    return "\(secondsAgo / 3600) hours ago"
-                case 86400:
-                    return "1 day ago"
-                default:
-                    return "\(secondsAgo / 86400) days ago"
+        NSLayoutConstraint.activate([
+            likeButton.leadingAnchor.constraint(equalTo: logoImageView.leadingAnchor),
+            likeButton.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 80)
+        ])
+    }
+    
+    @objc private func likePostTapped() {
+        guard let postID = postID, likeButton.tintColor != UIColor.a3.ruby else { return }
+        
+        NetworkManager.shared.likePost(postID: postID, netID: netID) { success in
+            if success {
+                self.likeButton.tintColor = UIColor.a3.ruby
+                self.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal) // Change to filled heart icon
+                self.likesLabel.text = "\(Int(self.likesLabel.text?.components(separatedBy: " ").first ?? "0")! + 1) likes"
+                self.likeButton.isEnabled = false
+                
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.likeButton.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+                }) { _ in
+                    UIView.animate(withDuration: 0.1) {
+                        self.likeButton.transform = CGAffineTransform.identity // Return to original size
+                    }
+                }
+            } else {
+                print("Failed to like the post.")
             }
         }
     }
 
+
+    
+    private func setupLikesLabel() {
+        likesLabel.textColor = UIColor.a3.black
+        likesLabel.font = .systemFont(ofSize: 14)
+        
+        contentView.addSubview(likesLabel)
+        likesLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            likesLabel.leadingAnchor.constraint(equalTo: likeButton.trailingAnchor, constant: 4),
+            likesLabel.centerYAnchor.constraint(equalTo: likeButton.centerYAnchor)
+        ])
+    }
+    
+}

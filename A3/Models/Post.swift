@@ -7,11 +7,10 @@
 
 import Foundation
 
-struct Post {
+struct Post: Decodable {
         let id: String
         var likes: [String]
         let message: String
         let time: Date
-        let name: String
 }
 

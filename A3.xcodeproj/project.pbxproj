@@ -19,7 +19,6 @@
 		2E32E8812AF1B109005D5325 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2E32E8802AF1B109005D5325 /* Alamofire */; };
 		2EC0B7CB2AF1B6C700F8F6F7 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC0B7CA2AF1B6C700F8F6F7 /* Post.swift */; };
 		DB1371602CD961E60002CE2C /* PostCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB13715F2CD961DA0002CE2C /* PostCollectionViewCell.swift */; };
-		DB1371622CD96A810002CE2C /* AppDevLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = DB1371612CD96A810002CE2C /* AppDevLogo.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,7 +35,6 @@
 		2E32E87D2AF1AE75005D5325 /* CreatePostCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostCollectionViewCell.swift; sourceTree = "<group>"; };
 		2EC0B7CA2AF1B6C700F8F6F7 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		DB13715F2CD961DA0002CE2C /* PostCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCollectionViewCell.swift; sourceTree = "<group>"; };
-		DB1371612CD96A810002CE2C /* AppDevLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppDevLogo.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +76,6 @@
 				2E32E8582AF1AAF6005D5325 /* AppDelegate.swift */,
 				2E32E85A2AF1AAF6005D5325 /* SceneDelegate.swift */,
 				2E32E8612AF1AAF7005D5325 /* Assets.xcassets */,
-				DB1371612CD96A810002CE2C /* AppDevLogo.png */,
 				2E32E8632AF1AAF7005D5325 /* LaunchScreen.storyboard */,
 				2E32E8662AF1AAF7005D5325 /* Info.plist */,
 			);
@@ -193,7 +190,6 @@
 			files = (
 				2E32E8652AF1AAF7005D5325 /* LaunchScreen.storyboard in Resources */,
 				2E32E8622AF1AAF7005D5325 /* Assets.xcassets in Resources */,
-				DB1371622CD96A810002CE2C /* AppDevLogo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

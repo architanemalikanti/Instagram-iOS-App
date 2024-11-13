@@ -17,7 +17,7 @@ class NetworkManager {
     private init() { }
 
     /// Endpoint for dev server
-    private let devEndpoint: String = "https://chatdev-wuzwgwv35a-ue.a.run.app"
+    private let devEndpoint: String = "https://chatdev-wuzwgwv35a-ue.a.run.app/"
     let decoder = JSONDecoder()
 
 
@@ -34,7 +34,7 @@ class NetworkManager {
         
         //3: create the request
         
-        AF.request(devEndpoint, method: .get)
+        AF.request("\(devEndpoint)/api/posts/", method: .get)
             .validate()
             .responseDecodable(of: [Post].self, decoder: decoder) { response in
                 
@@ -65,8 +65,8 @@ class NetworkManager {
         
         // 4. Create a decoder
         let decoder = JSONDecoder()
-        // decoder.dateDecodingStrategy = .iso8601 // Only if needed
-        // decoder.keyDecodingStrategy = .convertFromSnakeCase // Only if needed
+        decoder.dateDecodingStrategy = .iso8601 // Only if needed
+        decoder.keyDecodingStrategy = .convertFromSnakeCase // Only if needed
         
         // 5. Create the request
         AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default)
@@ -74,9 +74,9 @@ class NetworkManager {
             .responseDecodable(of: Post.self, decoder: decoder) { response in
             // 5. Handle the response
             switch response.result {
-            case .success(let member):
-                print("Successfully added member \(member.name)")
-                completion(member)
+            case .success(let message):
+                print("Successfully added post \(message.message)")
+                completion(message)
             case .failure(let error):
                 print("Error in NetworkManager.addToRoster: \(error)")
                 
@@ -85,6 +85,34 @@ class NetworkManager {
             
         
     }
+    
+    func likePost(postID: String, netID: String, completion: @escaping (Bool) -> Void) {
+        let endpoint = "https://chatdev-wuzwgwv35a-ue.a.run.app/api/posts/like/"
+        
+        let parameters: Parameters = [
+            "post_id": postID,
+            "net_id": netID
+        ]
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .validate()
+            .responseDecodable(of: Post.self, decoder: decoder) { response in
+                switch response.result {
+                case .success:
+                    print("Post liked successfully")
+                    completion(true)  // Success
+                case .failure(let error):
+                    print("Error in NetworkManager likePost: \(error)")
+                    completion(false) // Failure
+                }
+            }
+    }
+
+
+    
     
     
     
