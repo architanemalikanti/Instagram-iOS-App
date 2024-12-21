@@ -1,3 +1,1 @@
-# A3: ChatDev
-
-You must have Swift 5, iOS 13.0+, and Xcode 12.0+ to run this app.
+Daenerys Targaryen's Instagram Profile (Game of Thrones Character).
